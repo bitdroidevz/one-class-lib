@@ -1,4 +1,4 @@
-package com.bitdroid.oneclasslib;
+package com.bitdroid.oneclasslib.imagepicker;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -23,9 +23,13 @@ import android.os.AsyncTask;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.widget.Toast;
 
+/**
+ * Helper class for image pick from gallery or camera 
+ * @author Ravish
+ *
+ */
 public abstract class ImagePickerHelper {
 	
 	public abstract void onImagePicked(boolean isSuccess, String filePath, Bitmap bmp);
@@ -46,6 +50,10 @@ public abstract class ImagePickerHelper {
 		checkDirectory();
 	}
 	
+	/**
+	 * call method onClick or onTouch event 
+	 * @param frag if calling from fragment , null otherwise
+	 */
 	public void pickGalleryImage(Fragment frag){
 		Intent intent = new Intent(Intent.ACTION_PICK,MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
 		intent.setType("image/*");
@@ -55,6 +63,10 @@ public abstract class ImagePickerHelper {
 			mActivity.startActivityForResult(intent, REQUEST_PICKER_GALLERY);
 	}
 	
+	/**
+	 * call method onClick or onTouch event 
+	 * @param frag if calling from fragment , null otherwise
+	 */
 	public void captureCameraImage(Fragment frag){
 		Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 		filePath = parentFolder
@@ -69,6 +81,11 @@ public abstract class ImagePickerHelper {
 		mActivity.startActivityForResult(intent, REQUEST_CAPTURE_CAMERA);
 	}
 	
+	/**
+	 * varify if request is for image pick
+	 * @param requestCode
+	 * @return
+	 */
 	public boolean isValidRequest(int requestCode){
 		if(requestCode == REQUEST_CAPTURE_CAMERA || requestCode == REQUEST_PICKER_GALLERY)
 			return true;
@@ -76,6 +93,11 @@ public abstract class ImagePickerHelper {
 		return false;
 	}
 	
+	/**
+	 * call this method in onActivityResult
+	 * @param requestCode
+	 * @param data
+	 */
 	public void processResultIntent(int requestCode, Intent data){
 		if(!isValidRequest(requestCode)){
 			showToast("Invalid request");
@@ -127,9 +149,6 @@ public abstract class ImagePickerHelper {
 						ExifInterface.TAG_ORIENTATION,
 						ExifInterface.ORIENTATION_NORMAL);
 				int rotate = 0;
-				if (true) {
-					Log.i("RAVISH", "Before: " + width + "x" + length);
-				}
 
 				switch (orientation) {
 				case ExifInterface.ORIENTATION_ROTATE_270:
@@ -157,10 +176,6 @@ public abstract class ImagePickerHelper {
 					options.inSampleSize = scale * 2;
 				} else {
 					options.inSampleSize = scale;
-				}
-				if (true) {
-					Log.i("RAVISH", "Scale: " + (what / options.inSampleSize));
-					Log.i("RAVISH", "Rotate: " + rotate);
 				}
 				Bitmap bitmap = BitmapFactory.decodeFile(fileImage, options);
 				File original = new File(fileImage);
@@ -228,6 +243,10 @@ public abstract class ImagePickerHelper {
 		}	
 	}
 	
+	/**
+	 * method to show chooser onclick of item
+	 * @param frag pass this if calling from fragment , null otherwise
+	 */
 	public void showOption(final Fragment frag) {
 		final CharSequence[] items = { "Take Photo", "Choose from Gallery",
 				"Cancel" };
